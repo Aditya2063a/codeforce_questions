@@ -13,30 +13,66 @@ typedef pair<ll,ll> pll;
 #define mod 1000000007
 #define INF 1000000000
 
-int main(){
-    ios_base::sync_with_stdio(false);
-    cin.tie(0);
-
-    int tt;
-    cin>>tt;
-    while(tt--){
-        int n, j, k;
-        cin>>n>>j>>k;
-
-        vector<int> vec(n+1);
-        int mx=0;
-        for(int i=1; i<n+1; i++){
-            cin>>vec[i];
-            mx = max(mx, vec[i]);
-        }
-
-        if(k==1 && vec[j]!=mx){
-            cout<< "NO" << '\n';
-        }else{
-            cout<< "YES" << "\n";
-        }
-
+bool dfs(vector<vector<int>>& adj, int node, int target, vector<bool>& visited){
+    if(node == target){
+        return true;
     }
+    visited[node] = true;
+    for(int neighbor : adj[node]){
+        if(!visited[neighbor]){
+            return dfs(adj, neighbor, target, visited);
+        }
+    }
+    return false;
+}
+
+
+int main(){
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int n;
+    if(!(cin >> n)) return 0;
+    int m = (n*(n-1))/2 - 1;
+    vector<vector<int>> adj(n+1);
+    vector<int> deg(n+1, 0);
+
+    for(int i=0;i<m;i++){
+        int x,y; cin >> x >> y;
+        adj[x].push_back(y);
+        deg[x]++; deg[y]++;
+    }
+
+    // find the two vertices with degree n-2 (they missed one match between them)
+    int a=-1, b=-1;
+    for(int i=1;i<=n;i++){
+        if(deg[i] == n-2){
+            if(a == -1) a = i;
+            else b = i;
+        }
+    }
+
+    // topological sort (DFS finishing times)
+    vector<char> vis(n+1, 0);
+    vector<int> order;
+    function<void(int)> dfs = [&](int u){
+        vis[u] = 1;
+        for(int v: adj[u]){
+            if(!vis[v]) dfs(v);
+        }
+        order.push_back(u);
+    };
+
+    for(int i=1;i<=n;i++){
+        if(!vis[i]) dfs(i);
+    }
+    reverse(order.begin(), order.end());
+    vector<int> pos(n+1);
+    for(int i=0;i<n;i++) pos[order[i]] = i;
+
+    // the one earlier in topo order is the winner (smaller p_j)
+    if(pos[a] < pos[b]) cout << a << ' ' << b << '\n';
+    else cout << b << ' ' << a << '\n';
 
     return 0;
 }
