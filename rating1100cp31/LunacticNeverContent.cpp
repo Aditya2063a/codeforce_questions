@@ -1,0 +1,36 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+#define f first
+#define s second
+#define pb push_back
+
+typedef long long int ll;
+typedef unsigned long long int ull;
+typedef pair<int,int> pii;
+typedef pair<ll,ll> pll;
+
+#define mod 1000000007
+#define INF 1000000000
+
+void solve() {
+    int n;
+    cin >> n;
+    vector<int> a(n);
+    for (auto &i : a) cin >> i;
+    int ans = 0;
+    for (int i = 0; i < n; ++i) {
+        ans = __gcd(ans, abs(a[i] - a[n - i - 1]));
+    }
+    cout << ans << '\n';
+}
+ 
+int main() {
+    cin.tie(0);
+    cout.tie(0);
+    ios_base::sync_with_stdio(0);
+    int t;
+    cin >> t;
+    while (t--) solve();
+    return 0;
+}
